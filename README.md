@@ -1,7 +1,7 @@
 
-# xtenetwork High-Availability Daemon Wrapper
+# XTEnetwork High-Availability Daemon Wrapper
 
-This project is designed to wrap the xtenetwork daemon on a *nix system and monitor it for hangups, locks, fork, or other events that cause the daemon to stop responding to requests in an accurate manner.
+This project is designed to wrap the XTEnetwork daemon on a *nix system and monitor it for hangups, locks, fork, or other events that cause the daemon to stop responding to requests in an accurate manner.
 
 The sample **service.js** includes how to automatically restart the daemon if it hangs, locks, or otherwise stops responding.
 
@@ -24,20 +24,19 @@ N/A
 ## Dependencies
 
 * [NodeJS v8.x](https://nodejs.org/)
-* [xtenetwork](https://github.com/turtlecoin/turtlecoin/releases) v0.19.0 or higher
+* [XTEnetwork](https://github.com/trrxitte/traaitt/releases) v0.20.0 or higher
 
 ## Easy Start
 
-You *must* copy ```xtenetwork``` into the ```turtlecoind-ha``` folder for the easy start process to occur.
+You *must* copy ```XTEnetwork``` into the ```XTEnetwork-ha``` folder for the easy start process to occur.
 
 ```bash
-git clone https://github.com/turtlecoin/turtlecoind-ha.git
-cd turtlecoind-ha
+git clone https://github.com/trrxitte/xtenetwork-ha.git
+cd XTEnetwork-ha
 cp <xtenetwork> .
 sudo npm install & npm start
 ```
 
-The installation will also download the latest checkpoints. Please see [TurtleCoin Checkpoints](http://checkpoints.turtlecoin.lol) for more information.
 
 ## Keep it Running
 
@@ -49,7 +48,7 @@ npm install -g pm2
 pm2 startup
 pm2 install pm2-logrotate
 
-pm2 start service.js --name turtlecoind
+pm2 start service.js --name XTE
 pm2 save
 ```
 
@@ -82,15 +81,15 @@ var daemon = new xtenetwork({
 
   // These are the standard xtenetwork options
   path: './xtenetwork', // Where can I find xtenetwork?
-  dataDir: '~/.TurtleCoin', // Where do you store your blockchain?
+  dataDir: '~/.traaitt', // Where do you store your blockchain?
   enableCors: false, // Enable CORS support for the domain in this value
   enableBlockExplorer: true, // Enable the block explorer
   enableBlockExplorerDetailed: false, // Enable the detailed block explorer
   loadCheckpoints: false, // If set to a path to a file, will supply that file to the daemon if it exists.
   rpcBindIp: '0.0.0.0', // What IP to bind the RPC server to
-  rpcBindPort: 11898, // What Port to bind the RPC server to
+  rpcBindPort: 14478, // What Port to bind the RPC server to
   p2pBindIp: '0.0.0.0', // What IP to bind the P2P network to
-  p2pBindPort: 11897, // What Port to bind the P2P network to
+  p2pBindPort: 14475, // What Port to bind the P2P network to
   p2pExternalPort: 0, // What External Port to bind the P2P network to for those behind NAT
   allowLocalIp: false, // Add our own IP to the peer list?
   peers: false, // Manually add the peer(s) to the list. Allows for a string or an Array of strings.
