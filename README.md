@@ -1,7 +1,7 @@
 
-# traaittnetwork High-Availability Daemon Wrapper
+# xtenetwork High-Availability Daemon Wrapper
 
-This project is designed to wrap the traaittnetwork daemon on a *nix system and monitor it for hangups, locks, fork, or other events that cause the daemon to stop responding to requests in an accurate manner.
+This project is designed to wrap the xtenetwork daemon on a *nix system and monitor it for hangups, locks, fork, or other events that cause the daemon to stop responding to requests in an accurate manner.
 
 The sample **service.js** includes how to automatically restart the daemon if it hangs, locks, or otherwise stops responding.
 
@@ -14,7 +14,7 @@ The sample **service.js** includes how to automatically restart the daemon if it
 5. [Documentation](#documentation)
    1. [Methods](#methods)
    2. [Events](#events)
-   3. [traaittnetwork RPC API Interface](#turtlecoind-rpc-api-interface)
+   3. [xtenetwork RPC API Interface](#turtlecoind-rpc-api-interface)
    4. [WebSocket Connections](#websocket-connections)
 
 ## To Do
@@ -24,16 +24,16 @@ N/A
 ## Dependencies
 
 * [NodeJS v8.x](https://nodejs.org/)
-* [traaittnetwork](https://github.com/turtlecoin/turtlecoin/releases) v0.19.0 or higher
+* [xtenetwork](https://github.com/turtlecoin/turtlecoin/releases) v0.19.0 or higher
 
 ## Easy Start
 
-You *must* copy ```traaittnetwork``` into the ```turtlecoind-ha``` folder for the easy start process to occur.
+You *must* copy ```xtenetwork``` into the ```turtlecoind-ha``` folder for the easy start process to occur.
 
 ```bash
 git clone https://github.com/turtlecoin/turtlecoind-ha.git
 cd turtlecoind-ha
-cp <traaittnetwork> .
+cp <xtenetwork> .
 sudo npm install & npm start
 ```
 
@@ -65,11 +65,11 @@ npm run checkpoints
 
 ### Initialization
 
-Practically all traaittnetwork command line arguments are exposed in the constructor method. Simply include them in your list of options to get activate or use them. Default values are defined below.
+Practically all xtenetwork command line arguments are exposed in the constructor method. Simply include them in your list of options to get activate or use them. Default values are defined below.
 
 ```javascript
-var daemon = new traaittnetwork({
-  // These are our traaittnetwork-ha options
+var daemon = new xtenetwork({
+  // These are our xtenetwork-ha options
   pollingInterval: 10000, // How often to check the daemon in milliseconds
   maxPollingFailures: 3, // How many polling intervals can fail before we emit a down event?
   checkHeight: true, // Check the daemon block height against known trusted nodes
@@ -80,8 +80,8 @@ var daemon = new traaittnetwork({
   enableWebSocket: false, // Enables a socket.io websocket server on the rpcBindPort + 1
   webSocketPassword: false, // Set this to a password to use for the privileged socket events.
 
-  // These are the standard traaittnetwork options
-  path: './traaittnetwork', // Where can I find traaittnetwork?
+  // These are the standard xtenetwork options
+  path: './xtenetwork', // Where can I find xtenetwork?
   dataDir: '~/.TurtleCoin', // Where do you store your blockchain?
   enableCors: false, // Enable CORS support for the domain in this value
   enableBlockExplorer: true, // Enable the block explorer
@@ -301,7 +301,7 @@ daemon.on('ready', (info) => {
 
 ### Event - *start*
 
-This event is emitted when the daemon starts. The callback contains the command line arguments supplied to traaittnetwork.
+This event is emitted when the daemon starts. The callback contains the command line arguments supplied to xtenetwork.
 
 ```javascript
 daemon.on('start', (executablePath, args) => {
@@ -358,9 +358,9 @@ daemon.on('topblock', (height) => {
   // do something
 })
 ```
-## traaittnetwork RPC API Interface
+## xtenetwork RPC API Interface
 
-As we can actually run this wrapper inside another nodeJS project, we expose all of the traaittnetwork RPC API commands via the ```daemon.api``` property. Each of the below methods are [Javascript Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises). For safety sake, **always** handle your promise catches as we do use them properly.
+As we can actually run this wrapper inside another nodeJS project, we expose all of the xtenetwork RPC API commands via the ```daemon.api``` property. Each of the below methods are [Javascript Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises). For safety sake, **always** handle your promise catches as we do use them properly.
 
 Methods noted having options have parameters that may be *optional* or *required* as documented.
 

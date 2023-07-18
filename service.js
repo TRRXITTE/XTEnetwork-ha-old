@@ -4,7 +4,7 @@
 
 'use strict'
 
-const traaittnetwork = require('./')
+const xtenetwork = require('./')
 const util = require('util')
 
 const metrics = []
@@ -31,7 +31,7 @@ try {
   log('@pm2/io module not installed, ignoring...')
 }
 
-var daemon = new traaittnetwork({
+var daemon = new xtenetwork({
   loadCheckpoints: './checkpoints.csv'
   // Load additional daemon parameters here
 })
@@ -47,7 +47,7 @@ function resetMetrics (metrics) {
 }
 
 daemon.on('start', (args) => {
-  log(util.format('traaittnetwork has started... %s', args))
+  log(util.format('xtenetwork has started... %s', args))
   if (metrics.length !== 0) {
     resetMetrics(metrics)
     metrics[0].set('starting')
@@ -55,7 +55,7 @@ daemon.on('start', (args) => {
 })
 
 daemon.on('started', () => {
-  log('traaittnetwork is attempting to synchronize with the network...')
+  log('XTEnetwork is attempting to synchronize with the network...')
   if (metrics.length !== 0) {
     resetMetrics(metrics)
     metrics[0].set('started')
@@ -63,7 +63,7 @@ daemon.on('started', () => {
 })
 
 daemon.on('syncing', (info) => {
-  log(util.format('traaittnetwork has synchronized %s out of %s blocks [%s%]', info.height, info.network_height, info.percent))
+  log(util.format('XTEnetwork has synchronized %s out of %s blocks [%s%]', info.height, info.network_height, info.percent))
   if (metrics.length !== 0) {
     resetMetrics(metrics)
     metrics[0].set('synchronizing')
@@ -72,7 +72,7 @@ daemon.on('syncing', (info) => {
 })
 
 daemon.on('synced', () => {
-  log('traaittnetwork is synchronized with the network...')
+  log('XTEnetwork is synchronized with the network...')
   if (metrics.length !== 0) {
     resetMetrics(metrics)
     metrics[0].set('synchronized')
@@ -80,7 +80,7 @@ daemon.on('synced', () => {
 })
 
 daemon.on('ready', (info) => {
-  log(util.format('traaittnetwork is waiting for connections at %s @ %s - %s H/s', info.height, info.difficulty, info.globalHashRate))
+  log(util.format('XTEnetwork is waiting for connections at %s @ %s - %s H/s', info.height, info.difficulty, info.globalHashRate))
   if (metrics.length !== 0) {
     metrics[0].set('waiting for connections')
     metrics[2].set(info.height)
@@ -90,7 +90,7 @@ daemon.on('ready', (info) => {
 })
 
 daemon.on('desync', (daemon, network, deviance) => {
-  log(util.format('traaittnetwork is currently off the blockchain by %s blocks. Network: %s  Daemon: %s', deviance, network, daemon))
+  log(util.format('XTEnetwork is currently off the blockchain by %s blocks. Network: %s  Daemon: %s', deviance, network, daemon))
   if (metrics.length !== 0) {
     resetMetrics(metrics)
     metrics[0].set('desynchronized')
@@ -99,7 +99,7 @@ daemon.on('desync', (daemon, network, deviance) => {
 })
 
 daemon.on('down', () => {
-  log('traaittnetwork is not responding... stopping process...')
+  log('XTEnetwork is not responding... stopping process...')
   if (metrics.length !== 0) {
     resetMetrics(metrics)
     metrics[0].set('down')
@@ -108,7 +108,7 @@ daemon.on('down', () => {
 })
 
 daemon.on('stopped', (exitcode) => {
-  log(util.format('traaittnetwork has closed (exitcode: %s)... restarting process...', exitcode))
+  log(util.format('XTEnetwork has closed (exitcode: %s)... restarting process...', exitcode))
   if (metrics.length !== 0) {
     resetMetrics(metrics)
     metrics[0].set(`stopped (code: ${exitcode})`)

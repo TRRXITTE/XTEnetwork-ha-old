@@ -4,7 +4,7 @@
 
 'use strict'
 
-const traaittnetworkRPC = require('traaitt-rpc').traaittnetwork
+const traaittRPC = require('traaitt-rpc').xtenetwork
 const WebSocket = require('./lib/websocket.js')
 const pty = require('node-pty')
 const util = require('util')
@@ -21,11 +21,11 @@ const daemonResponses = {
   help: 'Show this help',
   block: 'current height added:'
 }
-const blockTargetTime = 144
+const blockTargetTime = 32
 
-const traaittnetwork = function (opts) {
+const xtenetwork = function (opts) {
   opts = opts || {}
-  if (!(this instanceof traaittnetwork)) return new traaittnetwork(opts)
+  if (!(this instanceof xtenetwork)) return new xtenetwork(opts)
 
   /*
     This is NOT where you set your options at. If you're changing
@@ -42,10 +42,10 @@ const traaittnetwork = function (opts) {
   this.enableWebSocket = (typeof opts.enableWebSocket === 'undefined') ? true : opts.enableWebSocket
   this.webSocketPassword = opts.webSocketPassword || false
 
-  // Begin traaittnetwork options
-  this.path = opts.path || path.resolve(__dirname, './traaittnetwork' + ((os.platform() === 'win32') ? '.exe' : ''))
+  // Begin xtenetwork options
+  this.path = opts.path || path.resolve(__dirname, './XTEnetwork' + ((os.platform() === 'win32') ? '.exe' : ''))
   this.dataDir = opts.dataDir || path.resolve(os.homedir(), './.traaitt')
-  this.logFile = opts.logFile || path.resolve(__dirname, './traaittnetwork.log')
+  this.logFile = opts.logFile || path.resolve(__dirname, './XTEnetwork.log')
   this.logLevel = opts.logLevel || 2
   this.enableCors = opts.enableCors || false
   this.enableBlockExplorer = (typeof opts.enableBlockExplorer === 'undefined') ? true : opts.enableBlockExplorer
@@ -58,7 +58,7 @@ const traaittnetwork = function (opts) {
   this.p2pExternalPort = opts.p2pExternalPort || false
   this.allowLocalIp = (typeof opts.allowLocalIp === 'undefined') ? true : opts.allowLocalIp
   this.peers = opts.peers || false
-  this.priorityNodes = opts.priorityNodes || false
+  this.priorityNodes = opts.priorityNodes || true
   this.exclusiveNodes = opts.exclusiveNodes || false
   this.seedNode = opts.seedNode || false
   this.hideMyPort = (typeof opts.hideMyPort === 'undefined') ? true : opts.hideMyPort
@@ -122,9 +122,9 @@ const traaittnetwork = function (opts) {
     }
   })
 }
-inherits(traaittnetwork, EventEmitter)
+inherits(xtenetwork, EventEmitter)
 
-traaittnetwork.prototype.start = function () {
+xtenetwork.prototype.start = function () {
   var databaseLockfile = path.resolve(util.format('%s/DB/LOCK', this.dataDir))
   if (fs.existsSync(databaseLockfile)) {
     this.emit('error', 'Database LOCK file exists...')
@@ -150,7 +150,7 @@ traaittnetwork.prototype.start = function () {
       return false
     }
   }
-  this.emit('info', 'Attempting to start traaittnetwork monitor...')
+  this.emit('info', 'Attempting to start xtenetwork monitor...')
   if (!fs.existsSync(this.path)) {
     this.emit('error', '************************************************')
     this.emit('error', util.format('%s could not be found', this.path))
@@ -218,7 +218,7 @@ traaittnetwork.prototype.start = function () {
   this.emit('start', util.format('%s%s', this.path, args.join(' ')))
 }
 
-traaittnetwork.prototype.stop = function () {
+xtenetwork.prototype.stop = function () {
   // If we are currently running our checks, it's a good idea to stop them before we go kill the child process
   if (this.checkDaemon) {
     clearInterval(this.checkDaemon)
@@ -233,11 +233,11 @@ traaittnetwork.prototype.stop = function () {
   }, (this.timeout * 2))
 }
 
-traaittnetwork.prototype.write = function (data) {
+xtenetwork.prototype.write = function (data) {
   this._write(util.format('%s\r', data))
 }
 
-traaittnetwork.prototype._checkChildStdio = function (data) {
+xtenetwork.prototype._checkChildStdio = function (data) {
   if (data.indexOf(daemonResponses.started) !== -1) {
     this.emit('started')
   } else if (data.indexOf(daemonResponses.help) !== -1) {
@@ -253,7 +253,7 @@ traaittnetwork.prototype._checkChildStdio = function (data) {
   }
 }
 
-traaittnetwork.prototype._triggerDown = function () {
+xtenetwork.prototype._triggerDown = function () {
   if (!this.firstCheckPassed) return
   if (!this.trigger) {
     this.trigger = setTimeout(() => {
@@ -262,7 +262,7 @@ traaittnetwork.prototype._triggerDown = function () {
   }
 }
 
-traaittnetwork.prototype._triggerUp = function () {
+xtenetwork.prototype._triggerUp = function () {
   if (!this.firstCheckPassed) this.firstCheckPassed = true
   if (this.trigger) {
     clearTimeout(this.trigger)
@@ -270,7 +270,7 @@ traaittnetwork.prototype._triggerUp = function () {
   }
 }
 
-traaittnetwork.prototype._checkServices = function () {
+xtenetwork.prototype._checkServices = function () {
   if (!this.synced) {
     this.synced = true
     this.checkDaemon = setInterval(() => {
@@ -304,7 +304,7 @@ traaittnetwork.prototype._checkServices = function () {
   }
 }
 
-traaittnetwork.prototype._checkRpc = function () {
+xtenetwork.prototype._checkRpc = function () {
   return Promise.all([
     this.api.info(),
     this.api.height()
@@ -318,7 +318,7 @@ traaittnetwork.prototype._checkRpc = function () {
     }).catch(err => { throw new Error(util.format('Daemon is not passing checks...: %s', err)) })
 }
 
-traaittnetwork.prototype._checkDaemon = function () {
+xtenetwork.prototype._checkDaemon = function () {
   return new Promise((resolve, reject) => {
     this.help = false
     this.write('help')
@@ -329,11 +329,11 @@ traaittnetwork.prototype._checkDaemon = function () {
   })
 }
 
-traaittnetwork.prototype._write = function (data) {
+xtenetwork.prototype._write = function (data) {
   this.child.write(data)
 }
 
-traaittnetwork.prototype._buildargs = function () {
+xtenetwork.prototype._buildargs = function () {
   var args = ''
   if (this.dataDir) args = util.format('%s --data-dir %s', args, this.dataDir)
   if (this.logFile) args = util.format('%s --log-file %s', args, this.logFile)
@@ -385,15 +385,15 @@ traaittnetwork.prototype._buildargs = function () {
   return args.split(' ')
 }
 
-traaittnetwork.prototype._setupAPI = function () {
-  this.api = new traaittnetworkRPC({
+xtenetwork.prototype._setupAPI = function () {
+  this.api = new traaittRPC({
     host: this.rpcBindIp,
     port: this.rpcBindPort,
     timeout: this.timeout
   })
 }
 
-traaittnetwork.prototype._setupWebSocket = function () {
+xtenetwork.prototype._setupWebSocket = function () {
   if (this.enableWebSocket) {
     this.webSocket = new WebSocket({
       port: (this.rpcBindPort + 1),
@@ -491,7 +491,7 @@ traaittnetwork.prototype._setupWebSocket = function () {
   }
 }
 
-traaittnetwork.prototype._registerWebSocketClientEvents = function (socket) {
+xtenetwork.prototype._registerWebSocketClientEvents = function (socket) {
   var that = this
   var events = Object.getPrototypeOf(this.api)
   events = Object.getOwnPropertyNames(events).filter((f) => {
@@ -532,4 +532,4 @@ function precisionRound (number, precision) {
   return Math.round(number * factor) / factor
 }
 
-module.exports = traaittnetwork
+module.exports = xtenetwork
