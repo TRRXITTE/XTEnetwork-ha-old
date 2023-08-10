@@ -1,5 +1,8 @@
+[![NPM](https://nodei.co/npm/@trrxitte/xtcashnetwork-ha.png?downloads=true&stars=true)](https://nodei.co/npm/@trrxitte/xtcashnetwork-ha/)
 
-# XTEnetwork High-Availability Daemon Wrapper
+[![Build Status](https://travis-ci.org/brandonlehmann/turtlecoind-ha.png?branch=master)](https://travis-ci.org/brandonlehmann/turtlecoind-ha) [![Build Status](https://ci.appveyor.com/api/projects/status/github/brandonlehmann/turtlecoind-ha?branch=master&svg=true)](https://ci.appveyor.com/project/brandonlehmann/turtlecoind-ha/branch/master)
+
+# traaitt High-Availability Daemon Wrapper
 
 This project is designed to wrap the XTEnetwork daemon on a *nix system and monitor it for hangups, locks, fork, or other events that cause the daemon to stop responding to requests in an accurate manner.
 
@@ -14,29 +17,27 @@ The sample **service.js** includes how to automatically restart the daemon if it
 5. [Documentation](#documentation)
    1. [Methods](#methods)
    2. [Events](#events)
-   3. [xtenetwork RPC API Interface](#turtlecoind-rpc-api-interface)
+   3. [XTEnetwork RPC API Interface](#xtcashnetwork-rpc-api-interface)
    4. [WebSocket Connections](#websocket-connections)
-
-## To Do
-
-N/A
 
 ## Dependencies
 
 * [NodeJS v8.x](https://nodejs.org/)
-* [XTEnetwork](https://github.com/trrxitte/traaitt/releases) v0.20.0 or higher
+* [XTEnetwork](https://github.com/trrxitte/traaittcash/releases) v1.4.4 
 
 ## Easy Start
 
 You *must* copy ```XTEnetwork``` into the ```XTEnetwork-ha``` folder for the easy start process to occur.
 
 ```bash
-git clone https://github.com/trrxitte/xtenetwork-ha.git
+git clone https://github.com/TRRXITTE/XTEnetwork-ha.git
 cd XTEnetwork-ha
-cp <xtenetwork> .
-sudo npm install & npm start
+cp <XTEnetwork> .
+npm install 
+node service.js
 ```
 
+**It is highly recommended that you use [checkpoints](https://documentation.trrxitte.com/guides/wallets/Using-Checkpoints/) when starting fresh or you'll need to wait a while for the sync to occur.**
 
 ## Keep it Running
 
@@ -48,27 +49,19 @@ npm install -g pm2
 pm2 startup
 pm2 install pm2-logrotate
 
-pm2 start service.js --name XTE
+pm2 start service.js --name xtcashnetwork
 pm2 save
-```
-
-## Updating Checkpoints
-
-This will download the latest checkpoints to use with your node.
-
-```bash
-npm run checkpoints
 ```
 
 ## Documentation
 
 ### Initialization
 
-Practically all xtenetwork command line arguments are exposed in the constructor method. Simply include them in your list of options to get activate or use them. Default values are defined below.
+Practically all XTEnetwork command line arguments are exposed in the constructor method. Simply include them in your list of options to get activate or use them. Default values are defined below.
 
 ```javascript
-var daemon = new xtenetwork({
-  // These are our xtenetwork-ha options
+var daemon = new XTEnetwork({
+  // These are our XTEnetwork-ha options
   pollingInterval: 10000, // How often to check the daemon in milliseconds
   maxPollingFailures: 3, // How many polling intervals can fail before we emit a down event?
   checkHeight: true, // Check the daemon block height against known trusted nodes
@@ -76,20 +69,20 @@ var daemon = new xtenetwork({
   clearP2pOnStart: true, // Will automatically delete the p2pstate.bin file on start if set to true
   clearDBLockFile: true, // Will automatically delete the DB LOCK file on start if set to true
   timeout: 2000, // How long to wait for RPC responses in milliseconds
-  enableWebSocket: false, // Enables a socket.io websocket server on the rpcBindPort + 1
+  enableWebSocket: true, // Enables a socket.io websocket server on the rpcBindPort + 1
   webSocketPassword: false, // Set this to a password to use for the privileged socket events.
 
-  // These are the standard xtenetwork options
-  path: './xtenetwork', // Where can I find xtenetwork?
+  // These are the standard TurtleCoind options
+  path: './XTEnetwork', // Where can I find TurtleCoind?
   dataDir: '~/.traaitt', // Where do you store your blockchain?
+  testnet: false, // Use the testnet?
   enableCors: false, // Enable CORS support for the domain in this value
   enableBlockExplorer: true, // Enable the block explorer
-  enableBlockExplorerDetailed: false, // Enable the detailed block explorer
   loadCheckpoints: false, // If set to a path to a file, will supply that file to the daemon if it exists.
   rpcBindIp: '0.0.0.0', // What IP to bind the RPC server to
-  rpcBindPort: 14478, // What Port to bind the RPC server to
+  rpcBindPort: 14486, // What Port to bind the RPC server to
   p2pBindIp: '0.0.0.0', // What IP to bind the P2P network to
-  p2pBindPort: 14475, // What Port to bind the P2P network to
+  p2pBindPort: 14487, // What Port to bind the P2P network to
   p2pExternalPort: 0, // What External Port to bind the P2P network to for those behind NAT
   allowLocalIp: false, // Add our own IP to the peer list?
   peers: false, // Manually add the peer(s) to the list. Allows for a string or an Array of strings.
@@ -101,7 +94,6 @@ var daemon = new xtenetwork({
   dbMaxOpenFiles: 100, // Number of allowed open files for the DB
   dbWriteBufferSize: 256, // Size of the DB write buffer in MB
   dbReadBufferSize: 10, // Size of the DB read cache in MB
-  dbCompression: false, // enable rocksdb compression
   feeAddress: false, // allows to specify the fee address for the node
   feeAmount: 0 // allows to specify the fee amount for the node
 })
@@ -300,7 +292,7 @@ daemon.on('ready', (info) => {
 
 ### Event - *start*
 
-This event is emitted when the daemon starts. The callback contains the command line arguments supplied to xtenetwork.
+This event is emitted when the daemon starts. The callback contains the command line arguments supplied to TurtleCoind.
 
 ```javascript
 daemon.on('start', (executablePath, args) => {
@@ -357,9 +349,9 @@ daemon.on('topblock', (height) => {
   // do something
 })
 ```
-## xtenetwork RPC API Interface
+## TurtleCoind RPC API Interface
 
-As we can actually run this wrapper inside another nodeJS project, we expose all of the xtenetwork RPC API commands via the ```daemon.api``` property. Each of the below methods are [Javascript Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises). For safety sake, **always** handle your promise catches as we do use them properly.
+As we can actually run this wrapper inside another nodeJS project, we expose all of the TurtleCoind RPC API commands via the ```daemon.api``` property. Each of the below methods are [Javascript Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises). For safety sake, **always** handle your promise catches as we do use them properly.
 
 Methods noted having options have parameters that may be *optional* or *required* as documented.
 

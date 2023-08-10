@@ -7,13 +7,9 @@ const http = require('https')
 
 del('checkpoints.csv').then((msg) => {
   console.log(msg)
-  console.log('Downloading latest checkpoints files...')
+  console.log('Downloading latest checkpoints file...')
 
-  return download('https://checkpoints.traaittcash.com/checkpoints.csv', 'checkpoints.csv')
-}).then((msg) => {
-  console.log(msg)
-
-  return download('https://checkpoints.traaittcash.com/checkpoints.csv', 'checkpoints.csv', false)
+  return download('https://checkpoints.turtlecoin.dev', 'checkpoints.csv')
 }).then((msg) => {
   console.log(msg)
   console.log('')

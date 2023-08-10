@@ -1,10 +1,10 @@
-// Copyright (c) 2018-2019, Brandon Lehmann, The TurtCoin Developers
+// Copyright (c) 2018-2019, Brandon Lehmann, The TurtleCoin Developers
 //
 // Please see the included LICENSE file for more information.
 
 'use strict'
 
-const XTEnetwork = require('./')
+const xtenetwork = require('./')
 const util = require('util')
 
 const metrics = []
@@ -31,7 +31,7 @@ try {
   log('@pm2/io module not installed, ignoring...')
 }
 
-var daemon = new XTEnetwork({
+var daemon = new xtenetwork({
   loadCheckpoints: './checkpoints.csv'
   // Load additional daemon parameters here
 })
@@ -47,7 +47,7 @@ function resetMetrics (metrics) {
 }
 
 daemon.on('start', (args) => {
-  log(util.format('XTEnetwork has started... %s', args))
+  log(util.format('xtenetwork has started... %s', args))
   if (metrics.length !== 0) {
     resetMetrics(metrics)
     metrics[0].set('starting')

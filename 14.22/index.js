@@ -1,10 +1,10 @@
-// Copyright (c) 2018, Brandon Lehmann, The TurtleCoin Developers
+// Copyright (c) 2018, Brandon Lehmann, The TurtCoin Developers
 //
 // Please see the included LICENSE file for more information.
 
 'use strict'
 
-const XTEnetwork = require('@trrxitte/traaitt-rpc').xtenetwork
+const traaittRPC = require('@trrxitte/traaitt-rpc').XTEetwork
 const WebSocket = require('./lib/websocket.js')
 const pty = require('node-pty')
 const util = require('util')
@@ -17,15 +17,15 @@ const shelljs = require('shelljs')
 const nonce = require('nonce')()
 
 const daemonResponses = {
-  started: 'P2p server initialized OK',
+  started: 'P2P server initialized OK',
   help: 'Show this help',
   block: 'current height added:'
 }
 const blockTargetTime = 32
 
-const xtenetwork = function (opts) {
+const XTEnetwork = function (opts) {
   opts = opts || {}
-  if (!(this instanceof xtenetwork)) return new xtenetwork(opts)
+  if (!(this instanceof XTEnetwork)) return new XTEnetwork(opts)
 
   /*
     This is NOT where you set your options at. If you're changing
@@ -39,34 +39,34 @@ const xtenetwork = function (opts) {
   this.clearP2pOnStart = (typeof opts.clearP2pOnStart === 'undefined') ? true : opts.clearP2pOnStart
   this.clearDBLockFile = (typeof opts.clearDBLockFile === 'undefined') ? true : opts.clearDBLockFile
   this.timeout = opts.timeout || 2000
-  this.enableWebSocket = (typeof opts.enableWebSocket === 'undefined') ? true : opts.enableWebSocket
+  this.enableWebSocket = (typeof opts.enableWebSocket === 'undefined') ? false : opts.enableWebSocket
   this.webSocketPassword = opts.webSocketPassword || false
 
-  // Begin xtenetwork options
+  // Begin XTEnetwork options
   this.path = opts.path || path.resolve(__dirname, './XTEnetwork' + ((os.platform() === 'win32') ? '.exe' : ''))
   this.dataDir = opts.dataDir || path.resolve(os.homedir(), './.traaitt')
   this.logFile = opts.logFile || path.resolve(__dirname, './XTEnetwork.log')
   this.logLevel = opts.logLevel || 2
-  this.enableCors = opts.enableCors || false
+  this.enableCors = opts.enableCors || "*"
   this.enableBlockExplorer = (typeof opts.enableBlockExplorer === 'undefined') ? true : opts.enableBlockExplorer
   this.enableBlockExplorerDetailed = (typeof opts.enableBlockExplorerDetailed === 'undefined') ? true : opts.enableBlockExplorerDetailed
   this.loadCheckpoints = opts.loadCheckpoints || false
   this.rpcBindIp = opts.rpcBindIp || '0.0.0.0'
   this.rpcBindPort = opts.rpcBindPort || 14478
   this.p2pBindIp = opts.p2pBindIp || false
-  this.p2pBindPort = opts.p2pBindPort || false
+  this.p2pBindPort = opts.p2pBindPort || 14475
   this.p2pExternalPort = opts.p2pExternalPort || false
-  this.allowLocalIp = (typeof opts.allowLocalIp === 'undefined') ? true : opts.allowLocalIp
+  this.allowLocalIp = (typeof opts.allowLocalIp === 'undefined') ? false : opts.allowLocalIp
   this.peers = opts.peers || false
   this.priorityNodes = opts.priorityNodes || true
   this.exclusiveNodes = opts.exclusiveNodes || false
   this.seedNode = opts.seedNode || false
-  this.hideMyPort = (typeof opts.hideMyPort === 'undefined') ? true : opts.hideMyPort
+  this.hideMyPort = (typeof opts.hideMyPort === 'undefined') ? false : opts.hideMyPort
   this.dbThreads = opts.dbThreads || false
   this.dbMaxOpenFiles = opts.dbMaxOpenFiles || false
   this.dbWriteBufferSize = opts.dbWriteBufferSize || false
   this.dbReadBufferSize = opts.dbReadBufferSize || false
-  this.dbCompression = (typeof opts.dbCompression === 'undefined') ? true : opts.dbCompression
+  this.dbCompression = (typeof opts.dbCompression === 'undefined') ? false : opts.dbCompression
   this.feeAddress = opts.feeAddress || false
   this.feeAmount = opts.feeAmount || 0
 
@@ -122,9 +122,9 @@ const xtenetwork = function (opts) {
     }
   })
 }
-inherits(xtenetwork, EventEmitter)
+inherits(XTEnetwork, EventEmitter)
 
-xtenetwork.prototype.start = function () {
+XTEnetwork.prototype.start = function () {
   var databaseLockfile = path.resolve(util.format('%s/DB/LOCK', this.dataDir))
   if (fs.existsSync(databaseLockfile)) {
     this.emit('error', 'Database LOCK file exists...')
@@ -150,7 +150,7 @@ xtenetwork.prototype.start = function () {
       return false
     }
   }
-  this.emit('info', 'Attempting to start xtenetwork monitor...')
+  this.emit('info', 'Attempting to start XTEnetwork-ha...')
   if (!fs.existsSync(this.path)) {
     this.emit('error', '************************************************')
     this.emit('error', util.format('%s could not be found', this.path))
@@ -218,7 +218,7 @@ xtenetwork.prototype.start = function () {
   this.emit('start', util.format('%s%s', this.path, args.join(' ')))
 }
 
-xtenetwork.prototype.stop = function () {
+XTEnetwork.prototype.stop = function () {
   // If we are currently running our checks, it's a good idea to stop them before we go kill the child process
   if (this.checkDaemon) {
     clearInterval(this.checkDaemon)
@@ -233,11 +233,11 @@ xtenetwork.prototype.stop = function () {
   }, (this.timeout * 2))
 }
 
-xtenetwork.prototype.write = function (data) {
+XTEnetwork.prototype.write = function (data) {
   this._write(util.format('%s\r', data))
 }
 
-xtenetwork.prototype._checkChildStdio = function (data) {
+XTEnetwork.prototype._checkChildStdio = function (data) {
   if (data.indexOf(daemonResponses.started) !== -1) {
     this.emit('started')
   } else if (data.indexOf(daemonResponses.help) !== -1) {
@@ -253,7 +253,7 @@ xtenetwork.prototype._checkChildStdio = function (data) {
   }
 }
 
-xtenetwork.prototype._triggerDown = function () {
+XTEnetwork.prototype._triggerDown = function () {
   if (!this.firstCheckPassed) return
   if (!this.trigger) {
     this.trigger = setTimeout(() => {
@@ -262,7 +262,7 @@ xtenetwork.prototype._triggerDown = function () {
   }
 }
 
-xtenetwork.prototype._triggerUp = function () {
+XTEnetwork.prototype._triggerUp = function () {
   if (!this.firstCheckPassed) this.firstCheckPassed = true
   if (this.trigger) {
     clearTimeout(this.trigger)
@@ -270,7 +270,7 @@ xtenetwork.prototype._triggerUp = function () {
   }
 }
 
-xtenetwork.prototype._checkServices = function () {
+XTEnetwork.prototype._checkServices = function () {
   if (!this.synced) {
     this.synced = true
     this.checkDaemon = setInterval(() => {
@@ -304,7 +304,7 @@ xtenetwork.prototype._checkServices = function () {
   }
 }
 
-xtenetwork.prototype._checkRpc = function () {
+XTEnetwork.prototype._checkRpc = function () {
   return Promise.all([
     this.api.info(),
     this.api.height()
@@ -318,7 +318,7 @@ xtenetwork.prototype._checkRpc = function () {
     }).catch(err => { throw new Error(util.format('Daemon is not passing checks...: %s', err)) })
 }
 
-xtenetwork.prototype._checkDaemon = function () {
+XTEnetwork.prototype._checkDaemon = function () {
   return new Promise((resolve, reject) => {
     this.help = false
     this.write('help')
@@ -329,11 +329,11 @@ xtenetwork.prototype._checkDaemon = function () {
   })
 }
 
-xtenetwork.prototype._write = function (data) {
+XTEnetwork.prototype._write = function (data) {
   this.child.write(data)
 }
 
-xtenetwork.prototype._buildargs = function () {
+XTEnetwork.prototype._buildargs = function () {
   var args = ''
   if (this.dataDir) args = util.format('%s --data-dir %s', args, this.dataDir)
   if (this.logFile) args = util.format('%s --log-file %s', args, this.logFile)
@@ -385,15 +385,15 @@ xtenetwork.prototype._buildargs = function () {
   return args.split(' ')
 }
 
-xtenetwork.prototype._setupAPI = function () {
-  this.api = new XTEnetwork({
+XTEnetwork.prototype._setupAPI = function () {
+  this.api = new traaittRPC({
     host: this.rpcBindIp,
     port: this.rpcBindPort,
     timeout: this.timeout
   })
 }
 
-xtenetwork.prototype._setupWebSocket = function () {
+XTEnetwork.prototype._setupWebSocket = function () {
   if (this.enableWebSocket) {
     this.webSocket = new WebSocket({
       port: (this.rpcBindPort + 1),
@@ -491,7 +491,7 @@ xtenetwork.prototype._setupWebSocket = function () {
   }
 }
 
-xtenetwork.prototype._registerWebSocketClientEvents = function (socket) {
+XTEnetwork.prototype._registerWebSocketClientEvents = function (socket) {
   var that = this
   var events = Object.getPrototypeOf(this.api)
   events = Object.getOwnPropertyNames(events).filter((f) => {
@@ -532,4 +532,4 @@ function precisionRound (number, precision) {
   return Math.round(number * factor) / factor
 }
 
-module.exports = xtenetwork
+module.exports = XTEnetwork
