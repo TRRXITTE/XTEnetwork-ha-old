@@ -386,7 +386,7 @@ XTEnetwork.prototype._buildargs = function () {
 }
 
 XTEnetwork.prototype._setupAPI = function () {
-  this.api = new traaittCASHRPC({
+  this.api = new traaittRPC({
     host: this.rpcBindIp,
     port: this.rpcBindPort,
     timeout: this.timeout
