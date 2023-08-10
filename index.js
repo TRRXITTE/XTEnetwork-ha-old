@@ -4,7 +4,7 @@
 
 'use strict'
 
-const XTEnetwork = require('traaitt-rpc').xtenetwork
+const XTEnetwork = require('@trrxitte/traaitt-rpc').xtenetwork
 const WebSocket = require('./lib/websocket.js')
 const pty = require('node-pty')
 const util = require('util')
