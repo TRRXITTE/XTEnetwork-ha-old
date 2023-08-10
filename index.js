@@ -4,7 +4,7 @@
 
 'use strict'
 
-const traaittRPC = require('traaitt-rpc').xtenetwork
+const XTEnetwork = require('traaitt-rpc').xtenetwork
 const WebSocket = require('./lib/websocket.js')
 const pty = require('node-pty')
 const util = require('util')
@@ -386,7 +386,7 @@ xtenetwork.prototype._buildargs = function () {
 }
 
 xtenetwork.prototype._setupAPI = function () {
-  this.api = new traaittRPC({
+  this.api = new XTEnetwork({
     host: this.rpcBindIp,
     port: this.rpcBindPort,
     timeout: this.timeout
